@@ -5,8 +5,19 @@ import {
 	GoogleAuthProvider,
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
+	signOut,
+	onAuthStateChanged,
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import {
+	getFirestore,
+	doc,
+	getDoc,
+	setDoc,
+	writeBatch,
+	collection,
+	query,
+	getDocs,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyA_LTdFGAHX-AQeTU9J-UbRQPHvaGhqfXw',
@@ -31,13 +42,47 @@ export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
 // setup firebase database
 export const db = getFirestore();
 
+export const addCollectionAndDocuments = async (
+	collectionKey,
+	objectsToAdd
+) => {
+	const collectionRef = collection(db, collectionKey);
+	const batch = writeBatch(db);
+
+	try {
+		objectsToAdd.forEach((object) => {
+			const docRef = doc(collectionRef, object.title.toLowerCase());
+			batch.set(docRef, object);
+		});
+
+		await batch.commit();
+		console.log('done');
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const getCategoriesAndDocuments = async () => {
+	const collectionRef = collection(db, 'categories');
+	const q = query(collectionRef);
+
+	const querySnapShot = await getDocs(q);
+	const categoryMap = querySnapShot.docs.reduce((acc, docSnapShot) => {
+		const { title, items } = docSnapShot.data();
+		acc[title.toLowerCase()] = items;
+		return acc;
+	}, {});
+
+	return categoryMap;
+};
+
 export const createUserDocumentFromAuth = async (
 	userAuth,
 	additionInformation = {}
 ) => {
 	if (!userAuth) return;
 
-	const userDocRef = doc(db, 'users', 'userAuth.uid');
+	const userDocRef = doc(db, 'users', userAuth.uid);
 	const userDocSnapshot = await getDoc(userDocRef);
 
 	// check if users exists in database
@@ -70,3 +115,10 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
 
 	return await signInWithEmailAndPassword(auth, email, password);
 };
+
+export const signOutAuthUser = async () => {
+	return await signOut(auth);
+};
+
+export const onAuthStateChangedListener = (callback) =>
+	onAuthStateChanged(auth, callback);
