@@ -5,7 +5,8 @@ import { ReactComponent as CrwnLogo } from '../../assets/crown.svg';
 import CartIcon from '../../components/cart-icon/cart-icon.component';
 import CartDropDown from '../../components/cart-dropdown/cart-dropdown.component';
 
-import { signOutAuthUser } from '../../utils/firebase/firebase.utils';
+import { useDispatch } from 'react-redux';
+import { signOutStart } from '../../store/user/user.action';
 
 import { selectIsCartOpen } from '../../store/cart/cart.selector';
 import { selectCurrentUser } from '../../store/user/user.selector';
@@ -18,8 +19,11 @@ import {
 } from './navigation.styles.jsx';
 
 const Navigation = () => {
+	const dispatch = useDispatch();
 	const currentUser = useSelector(selectCurrentUser);
 	const isCartOpen = useSelector(selectIsCartOpen);
+
+	const signOutUser = () => dispatch(signOutStart());
 
 	return (
 		<>
@@ -30,7 +34,7 @@ const Navigation = () => {
 				<NavLinks>
 					<NavLink to={'/shop'}>SHOP</NavLink>
 					{currentUser ? (
-						<NavLink as='span' onClick={signOutAuthUser}>
+						<NavLink as='span' onClick={signOutUser}>
 							SIGN OUT
 						</NavLink>
 					) : (
