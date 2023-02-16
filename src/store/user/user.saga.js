@@ -1,6 +1,5 @@
 import { takeLatest, all, put, call } from 'redux-saga/effects';
 
-import { USER_ACTION_TYPE } from './user.types';
 import {
 	signInSuccess,
 	signInFailed,
@@ -8,7 +7,12 @@ import {
 	signOutFailed,
 	signOutSuccess,
 	signUpSuccess,
-} from './user.action';
+	googleSignInStart,
+	checkUserSession,
+	emailSignInStart,
+	signOutStart,
+	signUpStart,
+} from './user.reducer';
 
 import {
 	getCurrentUser,
@@ -48,7 +52,8 @@ export function* isUserAuthenticated() {
 	}
 }
 
-export function* signInWithEmail({ payload: { email, password } }) {
+export function* signInWithEmail({ payload }) {
+	const { email, password } = payload;
 	try {
 		const { user } = yield call(
 			signInAuthUserWithEmailAndPassword,
@@ -79,7 +84,8 @@ export function* signOut() {
 	}
 }
 
-export function* signUp({ payload: { email, password, displayName } }) {
+export function* signUp({ payload }) {
+	const { email, password, displayName } = payload;
 	try {
 		const { user } = yield call(
 			createAuthUserWithEmailAndPassword,
@@ -93,32 +99,33 @@ export function* signUp({ payload: { email, password, displayName } }) {
 	}
 }
 
-export function* signInAfterSignUp({ payload: { user, additionalDetails } }) {
+export function* signInAfterSignUp({ payload }) {
+	const { user, additionalDetails } = payload;
 	yield call(getSnapshotFromUserAuth, user, additionalDetails);
 }
 
 export function* onSignUpSuccess() {
-	yield takeLatest(USER_ACTION_TYPE.SIGN_UP_SUCCESS, signInAfterSignUp);
+	yield takeLatest(signUpSuccess, signInAfterSignUp);
 }
 
 export function* onSignUpStart() {
-	yield takeLatest(USER_ACTION_TYPE.SIGN_UP_START, signUp);
+	yield takeLatest(signUpStart, signUp);
 }
 
 export function* onEmailSignInStart() {
-	yield takeLatest(USER_ACTION_TYPE.EMAIL_SIGN_IN_START, signInWithEmail);
+	yield takeLatest(emailSignInStart, signInWithEmail);
 }
 
 export function* onSignOutStart() {
-	yield takeLatest(USER_ACTION_TYPE.SIGN_OUT_START, signOut);
+	yield takeLatest(signOutStart, signOut);
 }
 
 export function* onGoogleSignInStart() {
-	yield takeLatest(USER_ACTION_TYPE.GOOGLE_SIGN_IN_START, signInWithGoogle);
+	yield takeLatest(googleSignInStart, signInWithGoogle);
 }
 
 export function* onCheckUserSession() {
-	yield takeLatest(USER_ACTION_TYPE.CHECK_USER_SESSION, isUserAuthenticated);
+	yield takeLatest(checkUserSession, isUserAuthenticated);
 }
 
 export function* userSaga() {

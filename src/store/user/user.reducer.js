@@ -1,4 +1,5 @@
-import { USER_ACTION_TYPE } from './user.types';
+import { createSlice } from '@reduxjs/toolkit';
+import { signInWithEmail, signUp } from './user.saga';
 
 const INITIAL_STATE = {
 	currentUser: null,
@@ -6,28 +7,53 @@ const INITIAL_STATE = {
 	error: null,
 };
 
-export const userReducer = (state = INITIAL_STATE, action) => {
-	const { type, payload } = action;
+export const userSlice = createSlice({
+	name: 'user',
+	initialState: INITIAL_STATE,
+	reducers: {
+		signInSuccess(state, action) {
+			state.currentUser = action.payload;
+		},
+		signOutSuccess(state, action) {
+			state.currentUser = null;
+		},
+		signUpSuccess(state, action) {
+			state.currentUser = action.payload;
+		},
+		signOutFailed(state, action) {
+			state.error = action.payload;
+		},
+		signInFailed(state, action) {
+			state.error = action.payload;
+		},
+		signUpStart(state, action) {
+			signUp(action.payload);
+		},
+		signUpfailed(state, action) {
+			state.error = action.payload;
+		},
+		signOutStart(state, action) {},
+		googleSignInStart(state, action) {},
+		emailSignInStart(state, action) {
+			state.currentUser = signInWithEmail(action.payload);
+		},
+		checkUserSession(state, action) {
+			state.currentUser = action.payload;
+		},
+	},
+});
 
-	switch (type) {
-		case USER_ACTION_TYPE.SIGN_IN_SUCCESS:
-			return {
-				...state,
-				currentUser: payload,
-			};
-		case USER_ACTION_TYPE.SIGN_OUT_SUCCESS:
-			return {
-				...state,
-				currentUser: null,
-			};
-		case USER_ACTION_TYPE.SIGN_OUT_FAILED:
-		case USER_ACTION_TYPE.SIGN_UP_FAILED:
-		case USER_ACTION_TYPE.SIGN_IN_FAILED:
-			return {
-				...state,
-				error: payload,
-			};
-		default:
-			return state;
-	}
-};
+export const {
+	signInFailed,
+	signInSuccess,
+	signOutFailed,
+	signOutSuccess,
+	signUpfailed,
+	signUpSuccess,
+	googleSignInStart,
+	checkUserSession,
+	emailSignInStart,
+	signOutStart,
+	signUpStart,
+} = userSlice.actions;
+export const userReducer = userSlice.reducer;
