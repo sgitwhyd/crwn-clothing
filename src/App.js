@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import { setCurrentUser } from './store/user/user.action';
+import { setCurrentUser } from './store/user/user.reducer';
 
 import {
 	onAuthStateChangedListener,
@@ -23,7 +23,11 @@ const App = () => {
 			if (user) {
 				createUserDocumentFromAuth(user);
 			}
-			dispatch(setCurrentUser(user));
+
+			const pickedUser =
+				user && (({ accessToken, email }) => ({ accessToken, email }))(user);
+
+			dispatch(setCurrentUser(pickedUser));
 		});
 
 		return unsubscribeFromAuth;
