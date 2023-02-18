@@ -53,7 +53,11 @@ const PaymentForm = () => {
 			alert(paymentResult.error.message);
 		} else {
 			if (paymentResult.paymentIntent.status === 'succeeded') {
-				alert('payment successfully');
+				alert(
+					`Payment With the amount of $${amount} and the customer ${
+						currentUser ? currentUser.displayName : 'guest'
+					} has been successful`
+				);
 			}
 		}
 	};
