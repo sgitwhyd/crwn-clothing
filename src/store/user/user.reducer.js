@@ -13,13 +13,12 @@ export const userSlice = createSlice({
 	reducers: {
 		signInSuccess(state, action) {
 			state.currentUser = action.payload;
+			state.error = null;
 		},
 		signOutSuccess(state, action) {
 			state.currentUser = null;
 		},
-		signUpSuccess(state, action) {
-			state.currentUser = action.payload;
-		},
+		signUpSuccess(state, action) {},
 		signOutFailed(state, action) {
 			state.error = action.payload;
 		},
@@ -29,7 +28,7 @@ export const userSlice = createSlice({
 		signUpStart(state, action) {
 			signUp(action.payload);
 		},
-		signUpfailed(state, action) {
+		signUpFailed(state, action) {
 			state.error = action.payload;
 		},
 		signOutStart(state, action) {},
@@ -48,7 +47,7 @@ export const {
 	signInSuccess,
 	signOutFailed,
 	signOutSuccess,
-	signUpfailed,
+	signUpFailed,
 	signUpSuccess,
 	googleSignInStart,
 	checkUserSession,
