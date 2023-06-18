@@ -126,7 +126,7 @@ export function* onSignUpSuccess() {
 }
 
 export function* onSignUpStart() {
-	yield* takeLatest(USER_ACTION_TYPE.SIGN_OUT_START, signUp);
+	yield* takeLatest(USER_ACTION_TYPE.SIGN_UP_START, signUp);
 }
 
 export function* onEmailSignInStart() {
