@@ -3,10 +3,11 @@ import { Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
 import { checkUserSession } from "./store/user/user.action";
+
 import Spinner from "./components/spinner/spinner.component";
-import Home from "./route/home/home.component";
-import Shop from "./route/shop/shop.component";
-import Checkout from "./route/checkout/checkout.component";
+const Home = lazy(() => import("./route/home/home.component"));
+const Shop = lazy(() => import("./route/shop/shop.component"));
+const Checkout = lazy(() => import("./route/checkout/checkout.component"));
 const Navigation = lazy(() =>
 	import("./route/navigation/navigation.component")
 );
